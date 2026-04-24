@@ -16,8 +16,8 @@
     },
     {
       "id": "mild",
-      "label": "Mild Swears",
-      "emoji": "😤",
+      "label": "Wins",
+      "emoji": "🏆",
       "color": "#4ecdc4",
       "initialCount": 0
     },
