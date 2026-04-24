@@ -32,7 +32,7 @@
   "settings": {
     "overlayMode": false,
     "showSessionStats": true,
-    "showTotalStats": true,
+    "showTotalStats": false,
     "showRate": true,
     "confirmReset": true,
     "persistData": true,
