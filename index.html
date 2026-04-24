@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swear Counter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        .counter-display {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .count {
+            font-size: 6rem;
+            font-weight: bold;
+            color: #667eea;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .increment-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .increment-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .increment-btn:active {
+            transform: translateY(0);
+        }
+
+        .decrement-btn {
+            background: #f093fb;
+            color: white;
+        }
+
+        .decrement-btn:hover {
+            background: #e67ff0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(240, 147, 251, 0.4);
+        }
+
+        .decrement-btn:active {
+            transform: translateY(0);
+        }
+
+        .reset-btn {
+            width: 100%;
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .reset-btn:hover {
+            background: #ee5a52;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .reset-btn:active {
+            transform: translateY(0);
+        }
+
+        .stats {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            color: #666;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #333;
+        }
+
+        @media (max-width: 480px) {
+            .count {
+                font-size: 4rem;
+            }
+
+            .container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function SwearCounter() {
+            const [count, setCount] = useState(() => {
+                const saved = localStorage.getItem('swearCount');
+                return saved ? parseInt(saved) : 0;
+            });
+
+            const [sessionCount, setSessionCount] = useState(0);
+            const [startTime] = useState(new Date());
+
+            useEffect(() => {
+                localStorage.setItem('swearCount', count.toString());
+            }, [count]);
+
+            const increment = () => {
+                setCount(count + 1);
+                setSessionCount(sessionCount + 1);
+            };
+
+            const decrement = () => {
+                if (count > 0) {
+                    setCount(count - 1);
+                    if (sessionCount > 0) {
+                        setSessionCount(sessionCount - 1);
+                    }
+                }
+            };
+
+            const reset = () => {
+                if (confirm('Are you sure you want to reset the counter?')) {
+                    setCount(0);
+                    setSessionCount(0);
+                    localStorage.removeItem('swearCount');
+                }
+            };
+
+            const getSessionDuration = () => {
+                const now = new Date();
+                const diff = Math.floor((now - startTime) / 1000 / 60);
+                return diff;
+            };
+
+            return (
+                <div className="container">
+                    <h1>Swear Counter</h1>
+
+                    <div className="counter-display">
+                        <div className="count">{count}</div>
+                    </div>
+
+                    <div className="buttons">
+                        <button className="increment-btn" onClick={increment}>
+                            +1 Swear
+                        </button>
+                        <button className="decrement-btn" onClick={decrement}>
+                            -1
+                        </button>
+                    </div>
+
+                    <button className="reset-btn" onClick={reset}>
+                        Reset Counter
+                    </button>
+
+                    <div className="stats">
+                        <div className="stat-item">
+                            <span>Total Count:</span>
+                            <span className="stat-value">{count}</span>
+                        </div>
+                        <div className="stat-item">
+                            <span>This Session:</span>
+                            <span className="stat-value">{sessionCount}</span>
+                        </div>
+                        <div className="stat-item">
+                            <span>Session Duration:</span>
+                            <span className="stat-value">{getSessionDuration()} min</span>
+                        </div>
+                        {getSessionDuration() > 0 && (
+                            <div className="stat-item">
+                                <span>Rate:</span>
+                                <span className="stat-value">
+                                    {(sessionCount / getSessionDuration()).toFixed(1)}/min
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<SwearCounter />, document.getElementById('root'));
+    </script>
+</body>
+</html>
