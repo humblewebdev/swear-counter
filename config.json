@@ -35,7 +35,7 @@
     "showRate": true,
     "confirmReset": true,
     "persistData": true,
-    "sharedCounters": false,
+    "sharedCounters": true,
     "firebaseConfig": {
       "apiKey": "AIzaSyBym2Xz9aftPcgzihHO7YvxRiXGUDUjatE",
       "authDomain": "swear-counter-e775a.firebaseapp.com",
