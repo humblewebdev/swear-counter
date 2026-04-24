@@ -9,7 +9,7 @@
   "counters": [
     {
       "id": "general",
-      "label": "General Swears",
+      "label": "Swears",
       "emoji": "🤬",
       "color": "#667eea",
       "initialCount": 0
