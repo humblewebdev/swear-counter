@@ -23,8 +23,8 @@
     },
     {
       "id": "extreme",
-      "label": "Extreme Swears",
-      "emoji": "💀",
+      "label": "Drinks",
+      "emoji": "🍺",
       "color": "#ff6b6b",
       "initialCount": 0
     }
