@@ -3,7 +3,9 @@
     "allow": [
       "Bash(npm create vite@latest:*)",
       "Bash(open:*)",
-      "Bash(git init:*)"
+      "Bash(git init:*)",
+      "Bash(python3 -m http.server:*)",
+      "Bash(chmod:*)"
     ]
   }
 }

@@ -1,0 +1,51 @@
+{
+  "appTitle": "Swear Counter",
+  "theme": {
+    "primaryColor": "#667eea",
+    "secondaryColor": "#764ba2",
+    "accentColor": "#f093fb",
+    "dangerColor": "#ff6b6b"
+  },
+  "counters": [
+    {
+      "id": "general",
+      "label": "General Swears",
+      "emoji": "🤬",
+      "color": "#667eea",
+      "initialCount": 0
+    },
+    {
+      "id": "mild",
+      "label": "Mild Swears",
+      "emoji": "😤",
+      "color": "#4ecdc4",
+      "initialCount": 0
+    },
+    {
+      "id": "extreme",
+      "label": "Extreme Swears",
+      "emoji": "💀",
+      "color": "#ff6b6b",
+      "initialCount": 0
+    }
+  ],
+  "settings": {
+    "showSessionStats": true,
+    "showTotalStats": true,
+    "showRate": true,
+    "confirmReset": true,
+    "persistData": true,
+    "sharedCounters": false,
+    "firebaseConfig": {
+      "apiKey": "AIzaSyBym2Xz9aftPcgzihHO7YvxRiXGUDUjatE",
+      "authDomain": "swear-counter-e775a.firebaseapp.com",
+      "databaseURL": "https://swear-counter-e775a-default-rtdb.firebaseio.com",
+      "projectId": "swear-counter-e775a",
+      "storageBucket": "swear-counter-e775a.firebasestorage.app",
+      "messagingSenderId": "522072803022",
+      "appId": "1:522072803022:web:582415fc67a2c4d7e2b29f",
+      "measurementId": "G-H5KC27VSSQ"
+    },
+    "counterSessionId": "default"
+  }
+}
