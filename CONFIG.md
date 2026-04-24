@@ -74,13 +74,26 @@ Control app behavior:
 
 ```json
 "settings": {
-  "showSessionStats": true,  // Show session statistics
-  "showTotalStats": true,    // Show total count across all counters
-  "showRate": true,          // Show swears per minute rate
-  "confirmReset": true,      // Ask for confirmation before resetting
-  "persistData": true        // Save counts to localStorage
+  "overlayMode": false,         // Enable transparent OBS overlay mode
+  "showSessionStats": true,     // Show session statistics
+  "showTotalStats": true,       // Show total count across all counters
+  "showRate": true,             // Show swears per minute rate
+  "confirmReset": true,         // Ask for confirmation before resetting
+  "persistData": true,          // Save counts to localStorage
+  "sharedCounters": false,      // Enable Firebase real-time sync
+  "firebaseConfig": { ... },    // Firebase configuration (see FIREBASE-SETUP.md)
+  "counterSessionId": "default" // Session ID for shared counters
 }
 ```
+
+**Setting Details:**
+
+- **overlayMode**: When `true`, enables transparent background and hides buttons - perfect for OBS browser source overlays. See [OBS-SETUP.md](OBS-SETUP.md).
+- **showSessionStats/showTotalStats/showRate**: Control which statistics are displayed.
+- **confirmReset**: Ask for confirmation before resetting counters (recommended: `true`).
+- **persistData**: Save counts to browser storage (localStorage or Firebase).
+- **sharedCounters**: Enable real-time synchronization across all users via Firebase. Requires `firebaseConfig` to be set. See [FIREBASE-SETUP.md](FIREBASE-SETUP.md).
+- **counterSessionId**: Isolates counter data by session ID. Change this to create separate counter instances (e.g., different streams, different days).
 
 ## Example Configurations
 

@@ -5,6 +5,7 @@ A simple React application to count how many times a streamer says a swear word.
 ## Features
 
 - **🔥 Real-time Shared Counters**: All users see the same count and updates happen instantly across all connected browsers (powered by Firebase)
+- **📺 OBS Overlay Mode**: Transparent background for streaming - add as a browser source in OBS
 - **Multiple Counters**: Track different categories of swears/events separately
 - **Fully Configurable**: Customize everything via `config.json`:
   - App title and theme colors
@@ -13,7 +14,8 @@ A simple React application to count how many times a streamer says a swear word.
   - Show/hide statistics
   - Enable/disable shared mode
 - **Persistent Storage**: Counts are saved (localStorage for local mode, Firebase for shared mode)
-- **Session Tracking**: Track current session separately from all-time totals
+- **⏱️ Manual Session Control**: Start/pause/resume/reset session timer with buttons - perfect for streams
+- **Session Tracking**: Track current session separately from all-time totals (synced across all users with Firebase)
 - **Statistics**:
   - Total count across all counters
   - Session count
@@ -73,6 +75,49 @@ To disable shared mode and use local-only counters:
   }
 }
 ```
+
+## OBS Overlay Mode
+
+Use the counter as a **transparent overlay** on your stream!
+
+Enable overlay mode in `config.json`:
+```json
+{
+  "settings": {
+    "overlayMode": true
+  }
+}
+```
+
+Features in overlay mode:
+- ✅ **Transparent background** - only counters visible on stream
+- ✅ **Enhanced readability** - larger text with strong shadows
+- ✅ **No buttons in overlay** - control from separate browser tab
+- ✅ **Works with OBS Browser Source**
+
+**Setup:** See [OBS-SETUP.md](OBS-SETUP.md) for complete instructions on adding to OBS Studio.
+
+**Quick OBS Setup:**
+1. Set `overlayMode: true` in config.json
+2. Deploy to GitHub Pages or run local server
+3. Add Browser Source in OBS with your URL
+4. Resize and position on stream
+5. Control counter from separate browser tab
+
+## Session Control
+
+Manually control when the session timer runs with **Start/Pause/Resume/Reset** buttons:
+
+- **▶ Start Session** - Begin timing when stream goes live
+- **⏸ Pause** - Pause during breaks (timer stops, counts preserved)
+- **▶ Resume** - Continue after break
+- **🔄 Reset Session** - Clear session timer for next stream
+
+**Synced with Firebase:** When using shared counters, all users see the same session state. Perfect for coordinating timing across your stream!
+
+**In OBS Overlay:** Session controls are hidden in overlay mode. Control them from your browser tab, and the session duration updates in the overlay automatically.
+
+See [SESSION-CONTROL.md](SESSION-CONTROL.md) for detailed documentation.
 
 ## How to Use
 

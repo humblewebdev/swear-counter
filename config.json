@@ -30,6 +30,7 @@
     }
   ],
   "settings": {
+    "overlayMode": false,
     "showSessionStats": true,
     "showTotalStats": true,
     "showRate": true,

@@ -163,6 +163,90 @@
                 font-size: 1rem;
             }
         }
+
+        /* Overlay Mode Styles */
+        body.overlay-mode {
+            background: transparent !important;
+            padding: 10px;
+            align-items: flex-start;
+            justify-content: flex-start;
+        }
+
+        body.overlay-mode .container {
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 0;
+            max-width: none;
+        }
+
+        body.overlay-mode h1 {
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9),
+                         0 0 20px rgba(0, 0, 0, 0.8);
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        body.overlay-mode .counter-card {
+            background: rgba(0, 0, 0, 0.7) !important;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        body.overlay-mode .counter-card:hover {
+            transform: none;
+        }
+
+        body.overlay-mode .counter-label {
+            color: white;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9);
+            font-size: 1.3rem;
+        }
+
+        body.overlay-mode .count {
+            font-size: 5rem;
+            text-shadow: 3px 3px 12px rgba(0, 0, 0, 0.9),
+                         0 0 30px rgba(0, 0, 0, 0.8);
+        }
+
+        body.overlay-mode .counter-buttons,
+        body.overlay-mode .reset-all-btn,
+        body.overlay-mode .session-controls {
+            display: none;
+        }
+
+        .session-controls {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .session-status {
+            font-weight: 600;
+        }
+
+        body.overlay-mode .global-stats {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        body.overlay-mode .stats-title,
+        body.overlay-mode .stat-item {
+            color: white;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9);
+        }
+
+        body.overlay-mode .stat-value {
+            color: white;
+        }
+
+        body.overlay-mode .loading {
+            color: white;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9);
+        }
     </style>
 </head>
 <body>
@@ -183,7 +267,9 @@
             const [config, setConfig] = useState(null);
             const [counts, setCounts] = useState({});
             const [sessionCounts, setSessionCounts] = useState({});
-            const [startTime] = useState(new Date());
+            const [sessionStartTime, setSessionStartTime] = useState(null);
+            const [sessionPausedTime, setSessionPausedTime] = useState(0);
+            const [sessionRunning, setSessionRunning] = useState(false);
             const [firebaseInitialized, setFirebaseInitialized] = useState(false);
             const databaseRef = useRef(null);
             const listenersRef = useRef({});
@@ -196,7 +282,12 @@
                         setConfig(configData);
 
                         // Apply theme to body
-                        document.body.style.background = `linear-gradient(135deg, ${configData.theme.primaryColor} 0%, ${configData.theme.secondaryColor} 100%)`;
+                        if (configData.settings.overlayMode) {
+                            document.body.classList.add('overlay-mode');
+                            document.body.style.background = 'transparent';
+                        } else {
+                            document.body.style.background = `linear-gradient(135deg, ${configData.theme.primaryColor} 0%, ${configData.theme.secondaryColor} 100%)`;
+                        }
                         document.title = configData.appTitle;
 
                         // Initialize Firebase if sharedCounters is enabled
@@ -265,6 +356,18 @@
 
                     listenersRef.current[counter.id] = () => counterRef.off('value', unsubscribe);
                 });
+
+                // Listen for session state
+                const sessionStateRef = databaseRef.current.ref(`sessions/${sessionId}/sessionState`);
+                const sessionUnsubscribe = sessionStateRef.on('value', (snapshot) => {
+                    const state = snapshot.val();
+                    if (state) {
+                        setSessionStartTime(state.startTime ? new Date(state.startTime) : null);
+                        setSessionPausedTime(state.pausedTime || 0);
+                        setSessionRunning(state.running || false);
+                    }
+                });
+                listenersRef.current['sessionState'] = () => sessionStateRef.off('value', sessionUnsubscribe);
             }, [firebaseInitialized, config]);
 
             // Save counts to localStorage (for non-Firebase mode)
@@ -356,9 +459,87 @@
                 }
             };
 
+            const startSession = () => {
+                if (config.settings.sharedCounters && databaseRef.current && firebaseInitialized) {
+                    const sessionId = config.settings.counterSessionId || 'default';
+                    const sessionStateRef = databaseRef.current.ref(`sessions/${sessionId}/sessionState`);
+                    sessionStateRef.set({
+                        startTime: new Date().toISOString(),
+                        pausedTime: 0,
+                        running: true
+                    });
+                } else {
+                    setSessionStartTime(new Date());
+                    setSessionPausedTime(0);
+                    setSessionRunning(true);
+                }
+                setSessionCounts({});
+            };
+
+            const pauseSession = () => {
+                if (!sessionStartTime || !sessionRunning) return;
+
+                const currentDuration = Math.floor((new Date() - sessionStartTime) / 1000);
+                const newPausedTime = sessionPausedTime + currentDuration;
+
+                if (config.settings.sharedCounters && databaseRef.current && firebaseInitialized) {
+                    const sessionId = config.settings.counterSessionId || 'default';
+                    const sessionStateRef = databaseRef.current.ref(`sessions/${sessionId}/sessionState`);
+                    sessionStateRef.update({
+                        pausedTime: newPausedTime,
+                        running: false
+                    });
+                } else {
+                    setSessionPausedTime(newPausedTime);
+                    setSessionRunning(false);
+                }
+            };
+
+            const resumeSession = () => {
+                if (config.settings.sharedCounters && databaseRef.current && firebaseInitialized) {
+                    const sessionId = config.settings.counterSessionId || 'default';
+                    const sessionStateRef = databaseRef.current.ref(`sessions/${sessionId}/sessionState`);
+                    sessionStateRef.update({
+                        startTime: new Date().toISOString(),
+                        running: true
+                    });
+                } else {
+                    setSessionStartTime(new Date());
+                    setSessionRunning(true);
+                }
+            };
+
+            const resetSession = () => {
+                const shouldReset = config?.settings.confirmReset
+                    ? confirm('Are you sure you want to reset the session timer?')
+                    : true;
+
+                if (shouldReset) {
+                    if (config.settings.sharedCounters && databaseRef.current && firebaseInitialized) {
+                        const sessionId = config.settings.counterSessionId || 'default';
+                        const sessionStateRef = databaseRef.current.ref(`sessions/${sessionId}/sessionState`);
+                        sessionStateRef.set({
+                            startTime: null,
+                            pausedTime: 0,
+                            running: false
+                        });
+                    } else {
+                        setSessionStartTime(null);
+                        setSessionPausedTime(0);
+                        setSessionRunning(false);
+                    }
+                }
+            };
+
             const getSessionDuration = () => {
-                const now = new Date();
-                return Math.floor((now - startTime) / 1000 / 60);
+                if (!sessionStartTime) return 0;
+
+                if (sessionRunning) {
+                    const currentDuration = Math.floor((new Date() - sessionStartTime) / 1000);
+                    return Math.floor((sessionPausedTime + currentDuration) / 60);
+                } else {
+                    return Math.floor(sessionPausedTime / 60);
+                }
             };
 
             const getTotalCount = () => {
@@ -471,6 +652,85 @@
                             )}
                         </div>
                     )}
+
+                    <div className="session-controls">
+                        <div className="stats-title" style={{ marginBottom: '15px' }}>Session Control</div>
+                        <div className="session-status" style={{ textAlign: 'center', marginBottom: '15px', fontSize: '1.1rem' }}>
+                            {sessionRunning ? (
+                                <span style={{ color: '#4ecdc4' }}>● Running</span>
+                            ) : sessionStartTime ? (
+                                <span style={{ color: '#ffa500' }}>⏸ Paused</span>
+                            ) : (
+                                <span style={{ color: '#999' }}>⏹ Not Started</span>
+                            )}
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                            {!sessionStartTime ? (
+                                <button
+                                    style={{
+                                        flex: 1,
+                                        padding: '12px',
+                                        background: '#4ecdc4',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '8px',
+                                        fontWeight: 'bold',
+                                        cursor: 'pointer'
+                                    }}
+                                    onClick={startSession}
+                                >
+                                    ▶ Start Session
+                                </button>
+                            ) : sessionRunning ? (
+                                <button
+                                    style={{
+                                        flex: 1,
+                                        padding: '12px',
+                                        background: '#ffa500',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '8px',
+                                        fontWeight: 'bold',
+                                        cursor: 'pointer'
+                                    }}
+                                    onClick={pauseSession}
+                                >
+                                    ⏸ Pause
+                                </button>
+                            ) : (
+                                <button
+                                    style={{
+                                        flex: 1,
+                                        padding: '12px',
+                                        background: '#4ecdc4',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '8px',
+                                        fontWeight: 'bold',
+                                        cursor: 'pointer'
+                                    }}
+                                    onClick={resumeSession}
+                                >
+                                    ▶ Resume
+                                </button>
+                            )}
+                            <button
+                                style={{
+                                    flex: 1,
+                                    padding: '12px',
+                                    background: config.theme.dangerColor,
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer'
+                                }}
+                                onClick={resetSession}
+                            >
+                                🔄 Reset Session
+                            </button>
+                        </div>
+                    </div>
 
                     <button
                         className="reset-all-btn"
