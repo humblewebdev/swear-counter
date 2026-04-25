@@ -29,10 +29,17 @@
       "initialCount": 0
     },
     {
-      "id": "shotgun",
-      "label": "Shotgun Kills",
-      "emoji": "💥",
-      "color": "#ffa500",
+      "id": "drunk",
+      "label": "Drunk Level",
+      "emoji": "🥴",
+      "color": "#9b59b6",
+      "initialCount": 0
+    },
+    {
+      "id": "bucee",
+      "label": "Bucee",
+      "emoji": "🦫",
+      "color": "#8B4513",
       "initialCount": 0
     }
   ],

@@ -227,6 +227,27 @@
             font-weight: 600;
         }
 
+        .meter-display {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .meter-dot {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            border: 2px solid #ddd;
+        }
+
+        body.overlay-mode .meter-dot {
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
         body.overlay-mode .global-stats {
             background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(10px);
@@ -380,14 +401,17 @@
             }, [counts, config]);
 
             const increment = (counterId) => {
+                // Special handling for drunk meter (0-5)
+                const maxValue = counterId === 'drunk' ? 5 : Infinity;
+
                 if (config.settings.sharedCounters && databaseRef.current && firebaseInitialized) {
                     const sessionId = config.settings.counterSessionId || 'default';
                     const counterRef = databaseRef.current.ref(`sessions/${sessionId}/counters/${counterId}`);
-                    counterRef.transaction((current) => (current || 0) + 1);
+                    counterRef.transaction((current) => Math.min(maxValue, (current || 0) + 1));
                 } else {
                     setCounts(prev => ({
                         ...prev,
-                        [counterId]: (prev[counterId] || 0) + 1
+                        [counterId]: Math.min(maxValue, (prev[counterId] || 0) + 1)
                     }));
                 }
                 setSessionCounts(prev => ({
@@ -583,6 +607,25 @@
                                 >
                                     {counts[counter.id] || 0}
                                 </div>
+                                {counter.id === 'drunk' && (
+                                    <div className="meter-display">
+                                        {[1, 2, 3, 4, 5].map(level => (
+                                            <span
+                                                key={level}
+                                                className="meter-dot"
+                                                style={{
+                                                    backgroundColor: (counts[counter.id] || 0) >= level
+                                                        ? counter.color
+                                                        : '#e0e0e0',
+                                                    boxShadow: (counts[counter.id] || 0) >= level
+                                                        ? `0 0 10px ${counter.color}`
+                                                        : 'none'
+                                                }}
+                                            >
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
                             <div className="counter-buttons">
