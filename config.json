@@ -27,6 +27,13 @@
       "emoji": "🍺",
       "color": "#ff6b6b",
       "initialCount": 0
+    },
+    {
+      "id": "shotgun",
+      "label": "Shotgun Kills",
+      "emoji": "💥",
+      "color": "#ffa500",
+      "initialCount": 0
     }
   ],
   "settings": {
