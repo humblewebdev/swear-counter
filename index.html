@@ -607,83 +607,118 @@
                                 >
                                     {counts[counter.id] || 0}
                                 </div>
-                                {counter.id === 'drunk' && (
-                                    <div className="gauge-container">
-                                        <svg viewBox="0 0 200 120" className="gauge-svg">
-                                            {/* Background arc */}
-                                            <path
-                                                d="M 20 100 A 80 80 0 0 1 180 100"
-                                                fill="none"
-                                                stroke="#e0e0e0"
-                                                strokeWidth="12"
-                                                strokeLinecap="round"
-                                            />
-                                            {/* Colored arc based on level */}
-                                            <path
-                                                d="M 20 100 A 80 80 0 0 1 180 100"
-                                                fill="none"
-                                                stroke={counter.color}
-                                                strokeWidth="12"
-                                                strokeLinecap="round"
-                                                strokeDasharray={`${((counts[counter.id] || 0) / 5) * 251.2} 251.2`}
-                                                style={{ transition: 'stroke-dasharray 0.3s ease' }}
-                                            />
-                                            {/* Tick marks */}
-                                            {[0, 1, 2, 3, 4, 5].map(tick => {
-                                                const angle = -180 + (tick * 180 / 5);
-                                                const radian = (angle * Math.PI) / 180;
-                                                const x1 = 100 + 70 * Math.cos(radian);
-                                                const y1 = 100 + 70 * Math.sin(radian);
-                                                const x2 = 100 + 80 * Math.cos(radian);
-                                                const y2 = 100 + 80 * Math.sin(radian);
-                                                return (
-                                                    <line
-                                                        key={tick}
-                                                        x1={x1}
-                                                        y1={y1}
-                                                        x2={x2}
-                                                        y2={y2}
-                                                        stroke="#666"
-                                                        strokeWidth="2"
-                                                    />
-                                                );
-                                            })}
-                                            {/* Numbers */}
-                                            {[0, 1, 2, 3, 4, 5].map(num => {
-                                                const angle = -180 + (num * 180 / 5);
-                                                const radian = (angle * Math.PI) / 180;
-                                                const x = 100 + 60 * Math.cos(radian);
-                                                const y = 100 + 60 * Math.sin(radian);
-                                                return (
-                                                    <text
-                                                        key={num}
-                                                        x={x}
-                                                        y={y + 5}
-                                                        textAnchor="middle"
-                                                        fontSize="14"
-                                                        fill="#666"
-                                                        fontWeight="bold"
-                                                    >
-                                                        {num}
-                                                    </text>
-                                                );
-                                            })}
-                                            {/* Needle */}
-                                            <line
-                                                x1="100"
-                                                y1="100"
-                                                x2={100 + 65 * Math.cos(((-180 + ((counts[counter.id] || 0) * 180 / 5)) * Math.PI) / 180)}
-                                                y2={100 + 65 * Math.sin(((-180 + ((counts[counter.id] || 0) * 180 / 5)) * Math.PI) / 180)}
-                                                stroke={counter.color}
-                                                strokeWidth="3"
-                                                strokeLinecap="round"
-                                                style={{ transition: 'all 0.5s ease' }}
-                                            />
-                                            {/* Center dot */}
-                                            <circle cx="100" cy="100" r="6" fill={counter.color} />
-                                        </svg>
-                                    </div>
-                                )}
+                                {counter.id === 'drunk' && (() => {
+                                    const level = counts[counter.id] || 0;
+                                    const getNeedleColor = () => {
+                                        if (level >= 5) return '#ff0000';
+                                        if (level >= 3) return '#ffa500';
+                                        return '#ffd700';
+                                    };
+                                    return (
+                                        <div className="gauge-container">
+                                            <svg viewBox="0 0 200 120" className="gauge-svg">
+                                                {/* Background arc */}
+                                                <path
+                                                    d="M 20 100 A 80 80 0 0 1 180 100"
+                                                    fill="none"
+                                                    stroke="#e0e0e0"
+                                                    strokeWidth="12"
+                                                    strokeLinecap="round"
+                                                />
+                                                {/* Yellow zone (0-3) */}
+                                                <path
+                                                    d="M 20 100 A 80 80 0 0 1 116 28"
+                                                    fill="none"
+                                                    stroke="#ffd700"
+                                                    strokeWidth="12"
+                                                    strokeLinecap="round"
+                                                    opacity="0.3"
+                                                />
+                                                {/* Orange zone (3-4) */}
+                                                <path
+                                                    d="M 116 28 A 80 80 0 0 1 148 36"
+                                                    fill="none"
+                                                    stroke="#ffa500"
+                                                    strokeWidth="12"
+                                                    strokeLinecap="round"
+                                                    opacity="0.3"
+                                                />
+                                                {/* Red zone (5) */}
+                                                <path
+                                                    d="M 148 36 A 80 80 0 0 1 180 100"
+                                                    fill="none"
+                                                    stroke="#ff0000"
+                                                    strokeWidth="12"
+                                                    strokeLinecap="round"
+                                                    opacity="0.3"
+                                                />
+                                                {/* Active arc based on level */}
+                                                <path
+                                                    d="M 20 100 A 80 80 0 0 1 180 100"
+                                                    fill="none"
+                                                    stroke={getNeedleColor()}
+                                                    strokeWidth="12"
+                                                    strokeLinecap="round"
+                                                    strokeDasharray={`${(level / 5) * 251.2} 251.2`}
+                                                    style={{ transition: 'stroke-dasharray 0.5s ease, stroke 0.3s ease' }}
+                                                />
+                                                {/* Tick marks */}
+                                                {[0, 1, 2, 3, 4, 5].map(tick => {
+                                                    const angle = -180 + (tick * 180 / 5);
+                                                    const radian = (angle * Math.PI) / 180;
+                                                    const x1 = 100 + 70 * Math.cos(radian);
+                                                    const y1 = 100 + 70 * Math.sin(radian);
+                                                    const x2 = 100 + 80 * Math.cos(radian);
+                                                    const y2 = 100 + 80 * Math.sin(radian);
+                                                    return (
+                                                        <line
+                                                            key={tick}
+                                                            x1={x1}
+                                                            y1={y1}
+                                                            x2={x2}
+                                                            y2={y2}
+                                                            stroke="#666"
+                                                            strokeWidth="2"
+                                                        />
+                                                    );
+                                                })}
+                                                {/* Numbers */}
+                                                {[0, 1, 2, 3, 4, 5].map(num => {
+                                                    const angle = -180 + (num * 180 / 5);
+                                                    const radian = (angle * Math.PI) / 180;
+                                                    const x = 100 + 60 * Math.cos(radian);
+                                                    const y = 100 + 60 * Math.sin(radian);
+                                                    return (
+                                                        <text
+                                                            key={num}
+                                                            x={x}
+                                                            y={y + 5}
+                                                            textAnchor="middle"
+                                                            fontSize="14"
+                                                            fill="#666"
+                                                            fontWeight="bold"
+                                                        >
+                                                            {num}
+                                                        </text>
+                                                    );
+                                                })}
+                                                {/* Needle */}
+                                                <line
+                                                    x1="100"
+                                                    y1="100"
+                                                    x2={100 + 65 * Math.cos(((-180 + (level * 180 / 5)) * Math.PI) / 180)}
+                                                    y2={100 + 65 * Math.sin(((-180 + (level * 180 / 5)) * Math.PI) / 180)}
+                                                    stroke={getNeedleColor()}
+                                                    strokeWidth="3"
+                                                    strokeLinecap="round"
+                                                    style={{ transition: 'all 0.5s ease' }}
+                                                />
+                                                {/* Center dot */}
+                                                <circle cx="100" cy="100" r="6" fill={getNeedleColor()} style={{ transition: 'fill 0.3s ease' }} />
+                                            </svg>
+                                        </div>
+                                    );
+                                })()}
                             </div>
 
                             <div className="counter-buttons">
