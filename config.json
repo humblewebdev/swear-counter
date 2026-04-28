@@ -1,10 +1,10 @@
 {
-  "appTitle": "SailorKevie Counter",
+  "appTitle": "SailorKevie Tactical HQ",
   "theme": {
-    "primaryColor": "#667eea",
-    "secondaryColor": "#764ba2",
-    "accentColor": "#f093fb",
-    "dangerColor": "#ff6b6b"
+    "primaryColor": "#2d4a2b",
+    "secondaryColor": "#1a1a1a",
+    "accentColor": "#556b2f",
+    "dangerColor": "#8b4513"
   },
   "counters": [
     {
