@@ -227,6 +227,133 @@
             font-weight: 600;
         }
 
+        .section-header {
+            margin: 30px 0 20px 0;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+        }
+
+        .section-header:first-of-type {
+            margin-top: 0;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        body.overlay-mode .section-header {
+            background: rgba(0, 0, 0, 0.5);
+            border-left-color: rgba(255, 255, 255, 0.5);
+        }
+
+        body.overlay-mode .section-header h2 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+        }
+
+        .weapons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .weapon-tile {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 3px solid;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .weapon-tile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .weapon-emoji {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+
+        .weapon-name {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 600;
+            margin-bottom: 10px;
+            min-height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .weapon-count {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .weapon-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .weapon-btn {
+            width: 45px;
+            height: 35px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .weapon-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .weapon-btn:active {
+            transform: scale(0.95);
+        }
+
+        .weapon-btn-increment {
+            flex: 2;
+        }
+
+        .weapon-btn-decrement {
+            background: #95a5a6;
+            flex: 1;
+        }
+
+        body.overlay-mode .weapon-tile {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        body.overlay-mode .weapon-name {
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+        }
+
+        body.overlay-mode .weapon-count {
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
+        }
+
+        body.overlay-mode .weapon-buttons {
+            display: none;
+        }
+
         .gauge-container {
             margin-top: 20px;
             display: flex;
@@ -589,11 +716,21 @@
                 );
             }
 
+            // Separate counters into stream stats and weapons
+            const weaponIds = ['assault_rifles', 'battle_rifles', 'smgs', 'sniper_rifles', 'lmgs', 'shotguns', 'marksman_rifles', 'handguns', 'launchers', 'melee'];
+            const streamCounters = config.counters.filter(c => !weaponIds.includes(c.id));
+            const weaponCounters = config.counters.filter(c => weaponIds.includes(c.id));
+
             return (
                 <div className="container">
                     <h1>{config.appTitle}</h1>
 
-                    {config.counters.map(counter => (
+                    {/* Stream Stats Section */}
+                    <div className="section-header">
+                        <h2>📊 Stream Stats</h2>
+                    </div>
+
+                    {streamCounters.map((counter) => (
                         <div key={counter.id} className="counter-card">
                             <div className="counter-header">
                                 <span className="counter-emoji">{counter.emoji}</span>
@@ -753,6 +890,48 @@
                             </div>
                         </div>
                     ))}
+
+                    {/* Weapon Challenge Grid */}
+                    {weaponCounters.length > 0 && (
+                        <>
+                            <div className="section-header">
+                                <h2>🎮 Weapon Challenge</h2>
+                            </div>
+                            <div className="weapons-grid">
+                                {weaponCounters.map(weapon => (
+                                    <div
+                                        key={weapon.id}
+                                        className="weapon-tile"
+                                        style={{ borderColor: weapon.color }}
+                                    >
+                                        <div className="weapon-emoji">{weapon.emoji}</div>
+                                        <div className="weapon-name">{weapon.label}</div>
+                                        <div
+                                            className="weapon-count"
+                                            style={{ color: weapon.color }}
+                                        >
+                                            {counts[weapon.id] || 0}
+                                        </div>
+                                        <div className="weapon-buttons">
+                                            <button
+                                                className="weapon-btn weapon-btn-increment"
+                                                onClick={() => increment(weapon.id)}
+                                                style={{ background: weapon.color }}
+                                            >
+                                                +
+                                            </button>
+                                            <button
+                                                className="weapon-btn weapon-btn-decrement"
+                                                onClick={() => decrement(weapon.id)}
+                                            >
+                                                -
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    )}
 
                     {(config.settings.showTotalStats || config.settings.showSessionStats) && (
                         <div className="global-stats">

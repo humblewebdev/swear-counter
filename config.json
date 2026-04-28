@@ -41,6 +41,76 @@
       "emoji": "🦫",
       "color": "#8B4513",
       "initialCount": 0
+    },
+    {
+      "id": "assault_rifles",
+      "label": "Assault Rifles",
+      "emoji": "🔫",
+      "color": "#e74c3c",
+      "initialCount": 0
+    },
+    {
+      "id": "battle_rifles",
+      "label": "Battle Rifles",
+      "emoji": "💥",
+      "color": "#3498db",
+      "initialCount": 0
+    },
+    {
+      "id": "smgs",
+      "label": "SMGs",
+      "emoji": "🔥",
+      "color": "#f39c12",
+      "initialCount": 0
+    },
+    {
+      "id": "sniper_rifles",
+      "label": "Sniper Rifles",
+      "emoji": "🎯",
+      "color": "#2ecc71",
+      "initialCount": 0
+    },
+    {
+      "id": "lmgs",
+      "label": "LMGs",
+      "emoji": "⚡",
+      "color": "#9b59b6",
+      "initialCount": 0
+    },
+    {
+      "id": "shotguns",
+      "label": "Shotguns",
+      "emoji": "💣",
+      "color": "#e67e22",
+      "initialCount": 0
+    },
+    {
+      "id": "marksman_rifles",
+      "label": "Marksman Rifles",
+      "emoji": "🏹",
+      "color": "#1abc9c",
+      "initialCount": 0
+    },
+    {
+      "id": "handguns",
+      "label": "Handguns",
+      "emoji": "🔸",
+      "color": "#95a5a6",
+      "initialCount": 0
+    },
+    {
+      "id": "launchers",
+      "label": "Launchers",
+      "emoji": "🚀",
+      "color": "#34495e",
+      "initialCount": 0
+    },
+    {
+      "id": "melee",
+      "label": "Melee Weapons",
+      "emoji": "⚔️",
+      "color": "#c0392b",
+      "initialCount": 0
     }
   ],
   "settings": {
